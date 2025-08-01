@@ -1,0 +1,106 @@
+'use client';
+
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+export default function AssistFarma() {
+  const [input, setInput] = useState("");
+  const [resposta, setResposta] = useState("");
+  const [digitando, setDigitando] = useState(false);
+
+  const respostasSimuladas: Record<string, string> = {
+    diurético: `**Sugestão de Atendimento**
+- Suplemento de magnésio e potássio (ex.: cloreto de magnésio PA, citrato de magnésio)
+- Complexo B para suporte neuromuscular
+**Cuidados:** Avaliar função renal antes de suplementar potássio`,
+    gestante: `**Sugestão de Atendimento**
+- Antiácidos à base de carbonato de cálcio
+- Fracionar refeições e evitar alimentos gordurosos
+**Cuidados:** Evitar medicamentos com sódio em excesso`,
+    azia: `**Sugestão de Atendimento**
+- Antiácidos à base de carbonato de cálcio
+- Fracionar refeições e evitar alimentos gordurosos
+**Cuidados:** Evitar medicamentos com sódio em excesso`,
+    resfriado: `**Sugestão de Atendimento**
+- Analgésicos/antitérmicos (paracetamol, dipirona)
+- Pastilhas para garganta
+- Lavagem nasal com soro fisiológico
+**Cuidados:** Evitar uso desnecessário de anti-inflamatórios`,
+    vertigem: `**Sugestão de Atendimento**
+- Reidratação oral com sais minerais
+- Cafeína leve se não houver contraindicação
+**Cuidados:** Procurar médico se sintomas forem recorrentes`,
+    pressão: `**Sugestão de Atendimento**
+- Reidratação oral com sais minerais
+- Cafeína leve se não houver contraindicação
+**Cuidados:** Procurar médico se sintomas forem recorrentes`,
+  };
+
+  const handleEnviar = () => {
+    if (!input.trim()) return;
+    setResposta("");
+    setDigitando(true);
+
+    setTimeout(() => {
+      const chave = Object.keys(respostasSimuladas).find((key) =>
+        input.toLowerCase().includes(key)
+      );
+      const respostaEscolhida =
+        chave ? respostasSimuladas[chave] : "Não encontrei uma sugestão específica para esta queixa, mas consulte um farmacêutico para orientações.";
+      
+      setDigitando(false);
+      mostrarTextoGradualmente(respostaEscolhida);
+      setInput("");
+    }, 1500);
+  };
+
+  const mostrarTextoGradualmente = (texto: string) => {
+    let index = 0;
+    const intervalo = setInterval(() => {
+      setResposta((prev) => prev + texto[index]);
+      index++;
+      if (index >= texto.length) clearInterval(intervalo);
+    }, 15);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleEnviar();
+    }
+  };
+
+  return (
+    <div style={{ padding: "20px", maxWidth: "700px", margin: "auto" }}>
+      <h1 style={{ color: "#28A745" }}>AssistFarma 💊</h1>
+      <p>Digite a queixa do cliente para receber sugestões personalizadas de atendimento.</p>
+      <Card>
+        <CardContent>
+          <Input
+            placeholder="Ex: Cliente com uso de diurético e câimbras"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <Button onClick={handleEnviar} style={{ marginTop: "10px" }}>Analisar</Button>
+          {digitando && <p>Digitando...</p>}
+          {resposta && (
+            <div
+              style={{
+                background: "#f0f0f0",
+                padding: "10px",
+                marginTop: "15px",
+                borderRadius: "5px",
+                whiteSpace: "pre-wrap"
+              }}
+            >
+              {resposta}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

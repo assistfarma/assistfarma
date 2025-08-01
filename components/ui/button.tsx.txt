@@ -1,0 +1,17 @@
+export function Button({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...props}
+      style={{
+        backgroundColor: "#28A745",
+        color: "#fff",
+        border: "none",
+        padding: "10px 15px",
+        borderRadius: "5px",
+        cursor: "pointer"
+      }}
+    >
+      {children}
+    </button>
+  );
+}
